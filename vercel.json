@@ -1,8 +1,0 @@
-{
-  "installCommand": "cd buzz-talks-feed-77938 && npm install",
-  "buildCommand": "cd buzz-talks-feed-77938 && npm run build",
-  "outputDirectory": "buzz-talks-feed-77938/dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
-  ]
-}
