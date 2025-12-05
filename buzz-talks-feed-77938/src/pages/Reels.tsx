@@ -181,14 +181,17 @@ const Reels = () => {
     <div className="min-h-screen w-full bg-background">
       <Sidebar />
       
-      <div className="ml-64 h-screen overflow-hidden">
+      {/* Main content - full screen for reels on mobile, sidebar offset on larger screens */}
+      <div className="h-screen overflow-hidden md:ml-[72px] lg:ml-64">
         {reels.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-muted-foreground">
-            No reels yet. Upload a video to get started!
+          <div className="h-full flex items-center justify-center text-muted-foreground px-4 text-center">
+            <div>
+              <p className="text-sm sm:text-base">No reels yet. Upload a video to get started!</p>
+            </div>
           </div>
         ) : (
           <div
-            className="h-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide"
+            className="h-full overflow-y-scroll snap-y snap-mandatory scrollbar-hide touch-pan-y"
             onScroll={handleScroll}
           >
             {reels.map((reel, index) => {
@@ -207,7 +210,7 @@ const Reels = () => {
                     loop
                     playsInline
                     muted={muted}
-                    className="h-full w-auto max-w-full object-contain"
+                    className="h-full w-full object-contain sm:object-contain max-w-full"
                     onClick={() => {
                       const video = videoRefs.current[index];
                       if (video) {
@@ -221,32 +224,32 @@ const Reels = () => {
                   />
 
                   {/* Overlay - User Info */}
-                  <div className="absolute bottom-20 left-6 right-24 text-white">
-                    <div className="flex items-center gap-3 mb-3">
+                  <div className="absolute bottom-20 sm:bottom-24 md:bottom-20 left-3 sm:left-4 md:left-6 right-16 sm:right-20 md:right-24 text-white">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                       <img
                         src={profile.avatarUrl}
                         alt={profile.username}
-                        className="w-10 h-10 rounded-full object-cover border-2 border-white"
+                        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white"
                       />
-                      <span className="font-semibold text-sm">{profile.username}</span>
+                      <span className="font-semibold text-xs sm:text-sm">{profile.username}</span>
                     </div>
-                    <p className="text-sm line-clamp-2">{reel.caption}</p>
+                    <p className="text-xs sm:text-sm line-clamp-2">{reel.caption}</p>
                   </div>
 
                   {/* Delete Button (Top Right) */}
                   {user?.uid === reel.authorId && (
-                    <div className="absolute top-6 right-6">
+                    <div className="absolute top-16 sm:top-20 md:top-6 right-3 sm:right-4 md:right-6">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="p-2 bg-black/50 hover:bg-black/70 rounded-full transition-smooth">
-                            <MoreHorizontal className="w-5 h-5 text-white" />
+                          <button className="p-1.5 sm:p-2 bg-black/50 hover:bg-black/70 rounded-full transition-smooth">
+                            <MoreHorizontal className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem
                             onClick={() => handleDelete(reel.id, reel.authorId)}
                             disabled={isDeleting}
-                            className="text-destructive focus:text-destructive"
+                            className="text-destructive focus:text-destructive text-sm"
                           >
                             <Trash2 className="w-4 h-4 mr-2" />
                             {isDeleting ? 'Deleting...' : 'Delete Reel'}
@@ -257,38 +260,38 @@ const Reels = () => {
                   )}
 
                   {/* Right Actions */}
-                  <div className="absolute bottom-20 right-6 flex flex-col items-center gap-6">
+                  <div className="absolute bottom-20 sm:bottom-24 md:bottom-20 right-2 sm:right-3 md:right-6 flex flex-col items-center gap-4 sm:gap-5 md:gap-6">
                     <button
                       onClick={() => handleLike(reel.id, reel.likes)}
-                      className="flex flex-col items-center gap-1 text-white hover-scale"
+                      className="flex flex-col items-center gap-0.5 sm:gap-1 text-white hover-scale"
                     >
                       <Heart
-                        className={`w-7 h-7 ${isLiked ? 'fill-destructive text-destructive' : ''}`}
+                        className={`w-6 h-6 sm:w-7 sm:h-7 ${isLiked ? 'fill-destructive text-destructive' : ''}`}
                       />
-                      <span className="text-xs font-semibold">{reel.likes.length}</span>
+                      <span className="text-[10px] sm:text-xs font-semibold">{reel.likes.length}</span>
                     </button>
 
-                    <button className="flex flex-col items-center gap-1 text-white hover-scale">
-                      <MessageCircle className="w-7 h-7" />
-                      <span className="text-xs font-semibold">{reel.commentsCount}</span>
+                    <button className="flex flex-col items-center gap-0.5 sm:gap-1 text-white hover-scale">
+                      <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7" />
+                      <span className="text-[10px] sm:text-xs font-semibold">{reel.commentsCount}</span>
                     </button>
 
-                    <button className="flex flex-col items-center gap-1 text-white hover-scale">
-                      <Send className="w-7 h-7" />
+                    <button className="flex flex-col items-center gap-0.5 sm:gap-1 text-white hover-scale">
+                      <Send className="w-6 h-6 sm:w-7 sm:h-7" />
                     </button>
 
-                    <button className="flex flex-col items-center gap-1 text-white hover-scale">
-                      <Bookmark className="w-7 h-7" />
+                    <button className="flex flex-col items-center gap-0.5 sm:gap-1 text-white hover-scale">
+                      <Bookmark className="w-6 h-6 sm:w-7 sm:h-7" />
                     </button>
 
                     <button
                       onClick={handleMuteToggle}
-                      className="flex flex-col items-center gap-1 text-white hover-scale mt-4"
+                      className="flex flex-col items-center gap-0.5 sm:gap-1 text-white hover-scale mt-2 sm:mt-4"
                     >
                       {muted ? (
-                        <VolumeX className="w-7 h-7" />
+                        <VolumeX className="w-6 h-6 sm:w-7 sm:h-7" />
                       ) : (
-                        <Volume2 className="w-7 h-7" />
+                        <Volume2 className="w-6 h-6 sm:w-7 sm:h-7" />
                       )}
                     </button>
                   </div>
@@ -298,16 +301,6 @@ const Reels = () => {
           </div>
         )}
       </div>
-
-      <style>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </div>
   );
 };

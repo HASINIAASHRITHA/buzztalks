@@ -15,6 +15,8 @@ export function StoryCarousel() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const [stories, setStories] = useState<Story[]>([]);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
 
   useEffect(() => {
     const loadStories = async () => {
@@ -40,9 +42,26 @@ export function StoryCarousel() {
     loadStories();
   }, [user]);
 
+  const checkScrollPosition = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
+
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    if (scrollElement) {
+      scrollElement.addEventListener('scroll', checkScrollPosition);
+      checkScrollPosition();
+      return () => scrollElement.removeEventListener('scroll', checkScrollPosition);
+    }
+  }, [stories]);
+
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = direction === 'left' ? -300 : 300;
+      const scrollAmount = direction === 'left' ? -200 : 200;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
@@ -50,46 +69,52 @@ export function StoryCarousel() {
   if (stories.length === 0) return null;
 
   return (
-    <div className="relative bg-card rounded-2xl p-4 shadow-card mb-6">
-      <button
-        onClick={() => scroll('left')}
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-background rounded-full p-2 shadow-card hover:shadow-hover transition-smooth"
-      >
-        <ChevronLeft className="w-5 h-5" />
-      </button>
+    <div className="relative bg-card rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-card mb-4 sm:mb-6">
+      {/* Left Arrow - hidden on mobile, shown on hover for larger screens */}
+      {showLeftArrow && (
+        <button
+          onClick={() => scroll('left')}
+          className="absolute left-1 sm:left-2 top-1/2 -translate-y-1/2 z-10 bg-background rounded-full p-1.5 sm:p-2 shadow-card hover:shadow-hover transition-smooth hidden sm:block"
+        >
+          <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
+      )}
 
       <div
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide scroll-smooth touch-pan-x"
       >
         {stories.map((story) => (
           <button
             key={story.id}
-            className="flex flex-col items-center gap-2 min-w-fit group"
+            className="flex flex-col items-center gap-1.5 sm:gap-2 min-w-fit group"
           >
-            <div className={`p-1 rounded-full ${story.hasStory ? 'gradient-story' : 'bg-muted'} hover-scale`}>
+            <div className={`p-0.5 sm:p-1 rounded-full ${story.hasStory ? 'gradient-story' : 'bg-muted'} hover-scale`}>
               <div className="p-0.5 bg-background rounded-full">
                 <img
                   src={story.avatar}
                   alt={story.user}
-                  className="w-16 h-16 rounded-full object-cover"
+                  className="w-12 h-12 sm:w-14 md:w-16 sm:h-14 md:h-16 rounded-full object-cover"
+                  loading="lazy"
                 />
               </div>
             </div>
-            <span className="text-xs text-muted-foreground max-w-[70px] truncate">
+            <span className="text-[10px] sm:text-xs text-muted-foreground max-w-[60px] sm:max-w-[70px] truncate">
               {story.user}
             </span>
           </button>
         ))}
       </div>
 
-      <button
-        onClick={() => scroll('right')}
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-background rounded-full p-2 shadow-card hover:shadow-hover transition-smooth"
-      >
-        <ChevronRight className="w-5 h-5" />
-      </button>
+      {/* Right Arrow - hidden on mobile */}
+      {showRightArrow && (
+        <button
+          onClick={() => scroll('right')}
+          className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 z-10 bg-background rounded-full p-1.5 sm:p-2 shadow-card hover:shadow-hover transition-smooth hidden sm:block"
+        >
+          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+        </button>
+      )}
     </div>
   );
 }

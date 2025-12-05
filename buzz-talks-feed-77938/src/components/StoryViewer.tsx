@@ -68,12 +68,12 @@ export function StoryViewer({ open, onClose, stories, initialIndex = 0 }: StoryV
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md p-0 bg-black border-none overflow-hidden">
-        <div className="relative aspect-[9/16] max-h-[80vh]">
+      <DialogContent className="max-w-[100vw] sm:max-w-md p-0 bg-black border-none overflow-hidden">
+        <div className="relative aspect-[9/16] max-h-[100dvh] sm:max-h-[80vh]">
           {/* Progress bars */}
-          <div className="absolute top-0 left-0 right-0 z-10 flex gap-1 p-2">
+          <div className="absolute top-0 left-0 right-0 z-10 flex gap-0.5 sm:gap-1 p-2 safe-area-inset">
             {stories.map((_, index) => (
-              <div key={index} className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden">
+              <div key={index} className="flex-1 h-0.5 sm:h-1 bg-white/30 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-white transition-all duration-100"
                   style={{
@@ -90,18 +90,18 @@ export function StoryViewer({ open, onClose, stories, initialIndex = 0 }: StoryV
           </div>
 
           {/* Header */}
-          <div className="absolute top-6 left-0 right-0 z-10 flex items-center justify-between px-4">
-            <div className="flex items-center gap-3">
+          <div className="absolute top-4 sm:top-6 left-0 right-0 z-10 flex items-center justify-between px-3 sm:px-4">
+            <div className="flex items-center gap-2 sm:gap-3">
               <img
                 src={currentStory.author?.avatarUrl}
                 alt={currentStory.author?.username}
-                className="w-10 h-10 rounded-full border-2 border-white"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white"
               />
-              <span className="text-white font-semibold text-sm">
+              <span className="text-white font-semibold text-xs sm:text-sm">
                 {currentStory.author?.username}
               </span>
             </div>
-            <button onClick={onClose} className="p-2 text-white hover:bg-white/20 rounded-full">
+            <button onClick={onClose} className="p-1.5 sm:p-2 text-white hover:bg-white/20 rounded-full touch-target">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -112,6 +112,7 @@ export function StoryViewer({ open, onClose, stories, initialIndex = 0 }: StoryV
               src={currentStory.mediaUrl}
               autoPlay
               muted
+              playsInline
               className="w-full h-full object-cover"
             />
           ) : (
@@ -122,19 +123,31 @@ export function StoryViewer({ open, onClose, stories, initialIndex = 0 }: StoryV
             />
           )}
 
-          {/* Navigation */}
+          {/* Navigation - Touch zones for mobile */}
+          <div 
+            onClick={goPrev}
+            className="absolute left-0 top-0 bottom-0 w-1/3 z-5"
+            style={{ opacity: 0 }}
+          />
+          <div 
+            onClick={goNext}
+            className="absolute right-0 top-0 bottom-0 w-1/3 z-5"
+            style={{ opacity: 0 }}
+          />
+          
+          {/* Navigation buttons - visible on larger screens */}
           <button
             onClick={goPrev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 p-4 text-white hover:bg-white/10"
+            className="absolute left-0 top-1/2 -translate-y-1/2 p-2 sm:p-4 text-white hover:bg-white/10 hidden sm:block"
             disabled={currentIndex === 0}
           >
-            <ChevronLeft className="w-8 h-8" />
+            <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8" />
           </button>
           <button
             onClick={goNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 p-4 text-white hover:bg-white/10"
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-2 sm:p-4 text-white hover:bg-white/10 hidden sm:block"
           >
-            <ChevronRight className="w-8 h-8" />
+            <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8" />
           </button>
         </div>
       </DialogContent>

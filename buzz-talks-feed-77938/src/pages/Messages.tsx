@@ -39,11 +39,12 @@ export default function Messages() {
     <div className="min-h-screen w-full bg-gradient-to-b from-background to-background/95">
       <Sidebar />
       
-      <div className="ml-64 min-h-screen">
+      {/* Main content area with responsive margins */}
+      <div className="min-h-screen pt-14 pb-20 md:pt-0 md:pb-0 md:ml-[72px] lg:ml-64">
         <HeaderBar onCreatePost={() => setCreatePostOpen(true)} />
         
-        <div className="max-w-4xl mx-auto px-8 py-6">
-          <div className="bg-card rounded-2xl shadow-card overflow-hidden h-[calc(100vh-180px)]">
+        <div className="max-w-4xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-4 md:py-6">
+          <div className="bg-card rounded-xl sm:rounded-2xl shadow-card overflow-hidden h-[calc(100vh-120px)] sm:h-[calc(100vh-140px)] md:h-[calc(100vh-180px)]">
             {selectedConversation ? (
               <ChatView
                 conversationId={selectedConversation.id}
@@ -53,19 +54,21 @@ export default function Messages() {
             ) : (
               <>
                 {/* Header */}
-                <div className="p-6 border-b border-border">
-                  <div className="flex items-center justify-between mb-4">
-                    <h1 className="text-2xl font-bold flex items-center gap-2">
-                      <MessageCircle className="w-6 h-6" />
+                <div className="p-3 sm:p-4 md:p-6 border-b border-border">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <h1 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2">
+                      <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
                       Messages
                     </h1>
                     <Button
                       onClick={() => setSearchModalOpen(true)}
                       variant="outline"
                       size="sm"
+                      className="text-xs sm:text-sm"
                     >
-                      <Plus className="w-4 h-4 mr-2" />
-                      New Message
+                      <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                      <span className="hidden xs:inline">New Message</span>
+                      <span className="xs:hidden">New</span>
                     </Button>
                   </div>
                   <div className="relative">
@@ -74,23 +77,23 @@ export default function Messages() {
                       placeholder="Search messages..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
+                      className="pl-9 sm:pl-10 text-sm sm:text-base h-9 sm:h-10"
                     />
                   </div>
                 </div>
 
                 {/* Conversations List */}
-                <div className="divide-y divide-border overflow-y-auto h-[calc(100%-140px)]">
+                <div className="divide-y divide-border overflow-y-auto h-[calc(100%-100px)] sm:h-[calc(100%-120px)] md:h-[calc(100%-140px)]">
                   {loading ? (
-                    <div className="flex justify-center py-12">
-                      <Loader2 className="w-6 h-6 animate-spin" />
+                    <div className="flex justify-center py-8 sm:py-12">
+                      <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
                     </div>
                   ) : filteredConversations.length === 0 ? (
-                    <div className="p-12 text-center">
-                      <MessageCircle className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
-                      <h3 className="text-lg font-semibold mb-2">No messages yet</h3>
-                      <p className="text-muted-foreground mb-4">Start a conversation with someone!</p>
-                      <Button onClick={() => setSearchModalOpen(true)}>
+                    <div className="p-6 sm:p-8 md:p-12 text-center">
+                      <MessageCircle className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-muted-foreground/50" />
+                      <h3 className="text-base sm:text-lg font-semibold mb-2">No messages yet</h3>
+                      <p className="text-sm text-muted-foreground mb-3 sm:mb-4">Start a conversation with someone!</p>
+                      <Button onClick={() => setSearchModalOpen(true)} className="text-sm">
                         <Plus className="w-4 h-4 mr-2" />
                         New Message
                       </Button>
@@ -100,28 +103,28 @@ export default function Messages() {
                       <button
                         key={conversation.id}
                         onClick={() => handleSelectConversation(conversation.id)}
-                        className="w-full p-4 hover:bg-muted/50 transition-smooth flex items-center gap-4 text-left"
+                        className="w-full p-3 sm:p-4 hover:bg-muted/50 transition-smooth flex items-center gap-3 sm:gap-4 text-left"
                       >
-                        <div className="relative">
+                        <div className="relative flex-shrink-0">
                           <img
                             src={conversation.otherUser?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
                             alt={conversation.otherUser?.username}
-                            className="w-14 h-14 rounded-full object-cover"
+                            className="w-10 h-10 sm:w-12 md:w-14 sm:h-12 md:h-14 rounded-full object-cover"
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <p className="font-semibold truncate">
+                          <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+                            <p className="font-semibold text-sm sm:text-base truncate">
                               {conversation.otherUser?.username || 'Unknown'}
                             </p>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-[10px] sm:text-xs text-muted-foreground flex-shrink-0 ml-2">
                               {conversation.lastMessageAt &&
                                 formatDistanceToNow(new Date(conversation.lastMessageAt), {
                                   addSuffix: true,
                                 })}
                             </span>
                           </div>
-                          <p className="text-sm truncate text-muted-foreground">
+                          <p className="text-xs sm:text-sm truncate text-muted-foreground">
                             {conversation.lastSenderId === user?.uid ? 'You: ' : ''}
                             {conversation.lastMessage || 'No messages yet'}
                           </p>

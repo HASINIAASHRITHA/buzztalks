@@ -58,33 +58,33 @@ export function ChatView({ conversationId, otherUser, onBack }: ChatViewProps) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center gap-4 p-4 border-b border-border">
-        <button onClick={onBack} className="p-2 hover:bg-muted rounded-full transition-smooth">
-          <ArrowLeft className="w-5 h-5" />
+      <div className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 border-b border-border">
+        <button onClick={onBack} className="p-1.5 sm:p-2 hover:bg-muted rounded-full transition-smooth touch-target">
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
         <img
           src={otherUser?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
           alt={otherUser?.username}
-          className="w-10 h-10 rounded-full object-cover"
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
         />
-        <div>
-          <p className="font-semibold">{otherUser?.username || 'Unknown'}</p>
-          <p className="text-xs text-muted-foreground">Active now</p>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-sm sm:text-base truncate">{otherUser?.username || 'Unknown'}</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground">Active now</p>
         </div>
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+      <ScrollArea className="flex-1 p-3 sm:p-4" ref={scrollRef}>
         {loading ? (
           <div className="flex justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin" />
+            <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 animate-spin" />
           </div>
         ) : messages.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className="text-center py-6 sm:py-8 text-muted-foreground text-sm">
             No messages yet. Start the conversation!
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {messages.map((message) => {
               const isOwn = message.senderId === user?.uid;
               return (
@@ -93,7 +93,7 @@ export function ChatView({ conversationId, otherUser, onBack }: ChatViewProps) {
                   className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[70%] rounded-2xl px-4 py-2 ${
+                    className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-3 sm:px-4 py-2 ${
                       isOwn
                         ? 'bg-primary text-primary-foreground rounded-br-sm'
                         : 'bg-muted rounded-bl-sm'
@@ -106,9 +106,9 @@ export function ChatView({ conversationId, otherUser, onBack }: ChatViewProps) {
                         className="max-w-full rounded-lg mb-2"
                       />
                     )}
-                    <p className="text-sm">{message.content}</p>
+                    <p className="text-xs sm:text-sm">{message.content}</p>
                     <p
-                      className={`text-xs mt-1 ${
+                      className={`text-[10px] sm:text-xs mt-1 ${
                         isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'
                       }`}
                     >
@@ -123,9 +123,9 @@ export function ChatView({ conversationId, otherUser, onBack }: ChatViewProps) {
       </ScrollArea>
 
       {/* Input */}
-      <form onSubmit={handleSubmit} className="p-4 border-t border-border">
-        <div className="flex gap-2">
-          <label className="cursor-pointer">
+      <form onSubmit={handleSubmit} className="p-3 sm:p-4 border-t border-border safe-area-inset">
+        <div className="flex gap-1.5 sm:gap-2">
+          <label className="cursor-pointer flex-shrink-0">
             <input
               type="file"
               accept="image/*"
@@ -133,7 +133,7 @@ export function ChatView({ conversationId, otherUser, onBack }: ChatViewProps) {
               onChange={handleImageUpload}
               disabled={uploading}
             />
-            <Button type="button" variant="outline" size="icon" disabled={uploading} asChild>
+            <Button type="button" variant="outline" size="icon" disabled={uploading} asChild className="h-9 w-9 sm:h-10 sm:w-10">
               <span>
                 {uploading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -147,9 +147,9 @@ export function ChatView({ conversationId, otherUser, onBack }: ChatViewProps) {
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1"
+            className="flex-1 text-sm sm:text-base h-9 sm:h-10"
           />
-          <Button type="submit" disabled={!newMessage.trim() || sending} size="icon">
+          <Button type="submit" disabled={!newMessage.trim() || sending} size="icon" className="h-9 w-9 sm:h-10 sm:w-10 flex-shrink-0">
             {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
           </Button>
         </div>

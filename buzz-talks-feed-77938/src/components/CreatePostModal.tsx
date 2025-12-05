@@ -123,18 +123,18 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">Create New Post</DialogTitle>
-          <DialogDescription>Share a photo or video with your followers</DialogDescription>
+      <DialogContent className="w-[95vw] max-w-lg sm:max-w-xl md:max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader className="pb-2 sm:pb-4">
+          <DialogTitle className="text-lg sm:text-xl md:text-2xl font-bold">Create New Post</DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm">Share a photo or video with your followers</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {/* File Upload */}
           {!preview ? (
-            <label className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-border rounded-xl cursor-pointer hover:bg-muted/50 transition-smooth">
-              <Upload className="w-12 h-12 text-muted-foreground mb-3" />
-              <span className="text-sm text-muted-foreground">Click to upload photo or video</span>
+            <label className="flex flex-col items-center justify-center h-40 sm:h-52 md:h-64 border-2 border-dashed border-border rounded-xl cursor-pointer hover:bg-muted/50 transition-smooth">
+              <Upload className="w-8 h-8 sm:w-10 md:w-12 sm:h-10 md:h-12 text-muted-foreground mb-2 sm:mb-3" />
+              <span className="text-xs sm:text-sm text-muted-foreground text-center px-4">Click to upload photo or video</span>
               <input
                 type="file"
                 accept="image/*,video/*"
@@ -148,13 +148,13 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
                 <video
                   src={preview}
                   controls
-                  className="w-full h-64 object-cover rounded-xl"
+                  className="w-full h-40 sm:h-52 md:h-64 object-cover rounded-xl"
                 />
               ) : (
                 <img
                   src={preview}
                   alt="Preview"
-                  className="w-full h-64 object-cover rounded-xl"
+                  className="w-full h-40 sm:h-52 md:h-64 object-cover rounded-xl"
                 />
               )}
               <button
@@ -162,17 +162,17 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
                   setFile(null);
                   setPreview('');
                 }}
-                className="absolute top-2 right-2 p-2 bg-background rounded-full shadow-card hover:shadow-hover transition-smooth"
+                className="absolute top-2 right-2 p-1.5 sm:p-2 bg-background rounded-full shadow-card hover:shadow-hover transition-smooth"
               >
-                <X className="w-4 h-4" />
+                <X className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
             </div>
           )}
 
           {/* Caption */}
-          <div>
-            <Label htmlFor="caption" className="flex items-center gap-2 mb-2">
-              <Hash className="w-4 h-4" />
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="caption" className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+              <Hash className="w-3 h-3 sm:w-4 sm:h-4" />
               Caption (use #hashtags)
             </Label>
             <Textarea
@@ -180,12 +180,12 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
               placeholder="Write a caption... Add #hashtags to reach more people"
               value={caption}
               onChange={(e) => setCaption(e.target.value)}
-              className="min-h-[100px] resize-none"
+              className="min-h-[70px] sm:min-h-[80px] md:min-h-[100px] resize-none text-sm"
             />
             {extractHashtags(caption).length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-1.5 sm:mt-2">
                 {extractHashtags(caption).map((tag) => (
-                  <span key={tag} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                  <span key={tag} className="text-[10px] sm:text-xs bg-primary/10 text-primary px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
                     #{tag}
                   </span>
                 ))}
@@ -194,9 +194,9 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
           </div>
 
           {/* Location */}
-          <div>
-            <Label htmlFor="location" className="flex items-center gap-2 mb-2">
-              <MapPin className="w-4 h-4" />
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="location" className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
+              <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
               Location (optional)
             </Label>
             <Input
@@ -204,18 +204,19 @@ export function CreatePostModal({ open, onClose }: CreatePostModalProps) {
               placeholder="Add location..."
               value={location}
               onChange={(e) => setLocation(e.target.value)}
+              className="h-9 sm:h-10 text-sm"
             />
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 justify-end">
-            <Button variant="outline" onClick={handleClose} disabled={loading}>
+          <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 sm:justify-end pt-2">
+            <Button variant="outline" onClick={handleClose} disabled={loading} className="h-9 sm:h-10 text-sm">
               Cancel
             </Button>
             <Button
               onClick={handlePost}
               disabled={loading || !file}
-              className="gradient-primary text-primary-foreground"
+              className="gradient-primary text-primary-foreground h-9 sm:h-10 text-sm"
             >
               {loading ? (
                 <>

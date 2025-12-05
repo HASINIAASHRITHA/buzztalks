@@ -96,18 +96,19 @@ const Index = () => {
     <div className="min-h-screen w-full bg-gradient-to-b from-background to-background/95">
       <Sidebar />
       
-      <div className="ml-64 min-h-screen">
+      {/* Main content area with responsive margins */}
+      <div className="min-h-screen pt-14 pb-20 md:pt-0 md:pb-0 md:ml-[72px] lg:ml-64">
         <HeaderBar onCreatePost={() => setCreatePostOpen(true)} />
         
-        <div className="max-w-7xl mx-auto px-8 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 md:py-6">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
             {/* Main Feed */}
-            <div className="lg:col-span-2">
+            <div className="xl:col-span-2">
               <StoryCarousel />
               
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {posts.length === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">
+                  <div className="text-center py-8 md:py-12 text-muted-foreground">
                     No posts yet. Be the first to share something!
                   </div>
                 ) : (
@@ -134,32 +135,32 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Right Sidebar */}
-            <div className="hidden lg:block">
+            {/* Right Sidebar - hidden on mobile and tablet */}
+            <div className="hidden xl:block">
               <div className="sticky top-24">
                 {/* User Profile Card */}
-                <div className="bg-card rounded-2xl shadow-card p-5 mb-6">
+                <div className="bg-card rounded-2xl shadow-card p-4 lg:p-5 mb-4 lg:mb-6">
                   <div className="flex items-center gap-3 mb-4">
                     <img
                       src={currentUserProfile?.avatarUrl || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
                       alt="Your profile"
-                      className="w-14 h-14 rounded-full object-cover"
+                      className="w-12 h-12 lg:w-14 lg:h-14 rounded-full object-cover"
                     />
-                    <div className="flex-1">
-                      <p className="font-semibold">{currentUserProfile?.username || 'Loading...'}</p>
-                      <p className="text-sm text-muted-foreground">{user?.email}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">{currentUserProfile?.username || 'Loading...'}</p>
+                      <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
                     </div>
                   </div>
                   <div className="flex gap-4 text-center text-sm">
-                    <div>
+                    <div className="flex-1">
                       <p className="font-bold">{posts.filter(p => p.authorId === user?.uid).length}</p>
                       <p className="text-muted-foreground text-xs">Posts</p>
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="font-bold">0</p>
                       <p className="text-muted-foreground text-xs">Followers</p>
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="font-bold">0</p>
                       <p className="text-muted-foreground text-xs">Following</p>
                     </div>

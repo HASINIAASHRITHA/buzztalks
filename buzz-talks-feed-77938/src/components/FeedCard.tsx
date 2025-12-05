@@ -144,18 +144,18 @@ export function FeedCard({ postId, user, image, caption, likes: initialLikes, co
 
   return (
     <>
-      <article className="bg-card rounded-2xl shadow-card overflow-hidden mb-6 animate-fade-in">
+      <article className="bg-card rounded-xl sm:rounded-2xl shadow-card overflow-hidden mb-4 sm:mb-6 animate-fade-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-4">
-          <button onClick={handleUserClick} className="flex items-center gap-3 hover:opacity-80 transition-smooth">
+        <div className="flex items-center justify-between p-3 sm:p-4">
+          <button onClick={handleUserClick} className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-smooth">
             <img
               src={user.avatar}
               alt={user.name}
-              className="w-10 h-10 rounded-full object-cover"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
             />
             <div>
-              <h3 className="font-semibold text-sm">{user.name}</h3>
-              <p className="text-xs text-muted-foreground">{timeAgo}</p>
+              <h3 className="font-semibold text-xs sm:text-sm">{user.name}</h3>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">{timeAgo}</p>
             </div>
           </button>
           {currentUser?.uid === authorId && (
@@ -179,50 +179,51 @@ export function FeedCard({ postId, user, image, caption, likes: initialLikes, co
           )}
         </div>
 
-        {/* Image */}
-        <div className="relative aspect-square bg-muted">
+        {/* Image - responsive aspect ratio */}
+        <div className="relative aspect-square sm:aspect-[4/5] md:aspect-square bg-muted">
           <img
             src={image}
             alt="Post"
             className="w-full h-full object-cover"
             onDoubleClick={handleLike}
+            loading="lazy"
           />
         </div>
 
         {/* Actions */}
-        <div className="p-4 space-y-3">
+        <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               <button
                 onClick={handleLike}
                 className="hover-scale"
               >
                 <Heart
-                  className={`w-6 h-6 ${liked ? 'fill-destructive text-destructive' : ''}`}
+                  className={`w-5 h-5 sm:w-6 sm:h-6 ${liked ? 'fill-destructive text-destructive' : ''}`}
                 />
               </button>
               <button className="hover-scale" onClick={() => setCommentsOpen(true)}>
-                <MessageCircle className="w-6 h-6" />
+                <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
               <button className="hover-scale">
-                <Send className="w-6 h-6" />
+                <Send className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
             <button
               onClick={() => setSaved(!saved)}
               className="hover-scale"
             >
-              <Bookmark className={`w-6 h-6 ${saved ? 'fill-foreground' : ''}`} />
+              <Bookmark className={`w-5 h-5 sm:w-6 sm:h-6 ${saved ? 'fill-foreground' : ''}`} />
             </button>
           </div>
 
           {/* Likes */}
-          <p className="font-semibold text-sm">
+          <p className="font-semibold text-xs sm:text-sm">
             {likeCount} likes
           </p>
 
           {/* Caption */}
-          <div className="text-sm">
+          <div className="text-xs sm:text-sm">
             <button onClick={handleUserClick} className="font-semibold mr-2 hover:underline">
               {user.name}
             </button>
@@ -233,7 +234,7 @@ export function FeedCard({ postId, user, image, caption, likes: initialLikes, co
           {commentCount > 0 && (
             <button 
               onClick={() => setCommentsOpen(true)}
-              className="text-sm text-muted-foreground hover:text-foreground transition-smooth"
+              className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-smooth"
             >
               View all {commentCount} comments
             </button>
