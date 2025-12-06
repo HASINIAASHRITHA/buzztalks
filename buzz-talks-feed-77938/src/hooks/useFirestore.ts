@@ -415,7 +415,7 @@ export function useMessages(conversationId: string) {
   }, [conversationId, user?.uid]);
 
   const sendMessage = async (content: string, mediaUrl?: string) => {
-    if (!user || !content.trim()) return;
+    if (!user || (!content.trim() && !mediaUrl)) return;
 
     await addDoc(collection(db, 'messages'), {
       conversationId,
@@ -428,7 +428,7 @@ export function useMessages(conversationId: string) {
 
     // Update conversation
     await updateDoc(doc(db, 'conversations', conversationId), {
-      lastMessage: content.trim(),
+      lastMessage: (mediaUrl && !content.trim()) ? "📸 Image" : content.trim(),
       lastMessageAt: new Date().toISOString(),
       lastSenderId: user.uid,
     });
@@ -442,7 +442,7 @@ export function useMessages(conversationId: string) {
           userId: otherUserId,
           fromUserId: user.uid,
           type: 'message',
-          content: content.substring(0, 100),
+          content: (mediaUrl && !content.trim()) ? "📸 Sent you an image" : content.substring(0, 100),
           read: false,
           createdAt: new Date().toISOString(),
         });
