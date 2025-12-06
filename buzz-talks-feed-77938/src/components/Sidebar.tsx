@@ -2,7 +2,7 @@ import { Home, Search, Compass, Heart, MessageCircle, PlusSquare, User, Settings
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useNotifications } from '@/hooks/useFirestore';
+import { useNotifications, useConversations } from '@/hooks/useFirestore';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -30,6 +30,7 @@ export function Sidebar() {
   const { theme, toggleTheme } = useTheme();
   const { logout } = useAuth();
   const { unreadCount } = useNotifications();
+  const { unreadMessagesCount } = useConversations();
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
@@ -71,7 +72,8 @@ export function Sidebar() {
       <nav className="flex-1 space-y-2">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
-          const showBadge = item.path === '/notifications' && unreadCount > 0;
+          const showNotificationBadge = item.path === '/notifications' && unreadCount > 0;
+          const showMessageBadge = item.path === '/messages' && unreadMessagesCount > 0;
           
           return (
             <button
@@ -83,9 +85,14 @@ export function Sidebar() {
             >
               <div className="relative">
                 <item.icon className="w-6 h-6" />
-                {showBadge && (
+                {showNotificationBadge && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full flex items-center justify-center text-[10px] text-white font-bold">
                     {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+                {showMessageBadge && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold">
+                    {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
                   </span>
                 )}
               </div>
@@ -136,7 +143,8 @@ export function Sidebar() {
       <nav className="flex-1 space-y-2 w-full">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
-          const showBadge = item.path === '/notifications' && unreadCount > 0;
+          const showNotificationBadge = item.path === '/notifications' && unreadCount > 0;
+          const showMessageBadge = item.path === '/messages' && unreadMessagesCount > 0;
           
           return (
             <button
@@ -149,9 +157,14 @@ export function Sidebar() {
             >
               <div className="relative">
                 <item.icon className="w-6 h-6" />
-                {showBadge && (
+                {showNotificationBadge && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full flex items-center justify-center text-[10px] text-white font-bold">
                     {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+                {showMessageBadge && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold">
+                    {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
                   </span>
                 )}
               </div>
@@ -188,7 +201,8 @@ export function Sidebar() {
     <nav className="fixed bottom-0 left-0 right-0 h-16 bg-card border-t border-border flex items-center justify-around px-2 z-50 md:hidden safe-area-inset-bottom">
       {mobileNavItems.map((item) => {
         const isActive = location.pathname === item.path;
-        const showBadge = item.path === '/notifications' && unreadCount > 0;
+        const showNotificationBadge = item.path === '/notifications' && unreadCount > 0;
+        const showMessageBadge = item.path === '/messages' && unreadMessagesCount > 0;
         
         return (
           <button
@@ -200,9 +214,14 @@ export function Sidebar() {
           >
             <div className="relative">
               <item.icon className={`w-6 h-6 ${isActive ? 'fill-primary/20' : ''}`} />
-              {showBadge && (
+              {showNotificationBadge && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full flex items-center justify-center text-[10px] text-white font-bold">
                   {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
+              {showMessageBadge && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold">
+                  {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
                 </span>
               )}
             </div>
@@ -233,9 +252,12 @@ export function Sidebar() {
         
         <button 
           onClick={() => handleNavigation('/messages')}
-          className="p-2 rounded-full hover:bg-muted transition-smooth"
+          className="p-2 rounded-full hover:bg-muted transition-smooth relative"
         >
           <MessageCircle className="w-5 h-5" />
+          {unreadMessagesCount > 0 && (
+            <span className="absolute top-1 right-1 w-2 h-2 bg-blue-500 rounded-full" />
+          )}
         </button>
 
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -255,7 +277,8 @@ export function Sidebar() {
               <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
                 {navItems.map((item) => {
                   const isActive = location.pathname === item.path;
-                  const showBadge = item.path === '/notifications' && unreadCount > 0;
+                  const showNotificationBadge = item.path === '/notifications' && unreadCount > 0;
+                  const showMessageBadge = item.path === '/messages' && unreadMessagesCount > 0;
                   
                   return (
                     <button
@@ -267,9 +290,14 @@ export function Sidebar() {
                     >
                       <div className="relative">
                         <item.icon className="w-5 h-5" />
-                        {showBadge && (
+                        {showNotificationBadge && (
                           <span className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full flex items-center justify-center text-[10px] text-white font-bold">
                             {unreadCount > 9 ? '9+' : unreadCount}
+                          </span>
+                        )}
+                        {showMessageBadge && (
+                          <span className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold">
+                            {unreadMessagesCount > 9 ? '9+' : unreadMessagesCount}
                           </span>
                         )}
                       </div>

@@ -279,6 +279,7 @@ export function useNotifications() {
 export function useConversations() {
   const [conversations, setConversations] = useState<(Conversation & { otherUser: UserProfile })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -318,6 +319,22 @@ export function useConversations() {
           otherUser: profiles[c.participants.find((p) => p !== user.uid) || ''],
         }))
       );
+
+      // Calculate total unread messages count
+      let totalUnread = 0;
+      await Promise.all(
+        conversationsData.map(async (conversation) => {
+          const messagesQuery = query(
+            collection(db, 'messages'),
+            where('conversationId', '==', conversation.id),
+            where('read', '==', false),
+            where('senderId', '!=', user.uid)
+          );
+          const messagesSnapshot = await getDocs(messagesQuery);
+          totalUnread += messagesSnapshot.size;
+        })
+      );
+      setUnreadMessagesCount(totalUnread);
       setLoading(false);
     });
 
@@ -353,7 +370,7 @@ export function useConversations() {
     return conversationRef.id;
   };
 
-  return { conversations, loading, createOrGetConversation };
+  return { conversations, loading, createOrGetConversation, unreadMessagesCount };
 }
 
 export function useMessages(conversationId: string) {
@@ -370,18 +387,32 @@ export function useMessages(conversationId: string) {
       orderBy('createdAt', 'asc')
     );
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setMessages(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        } as Message))
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      const messagesData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      } as Message));
+      
+      setMessages(messagesData);
+
+      // Mark unread messages from other users as read
+      const unreadMessages = messagesData.filter(
+        (msg) => msg.senderId !== user?.uid && !msg.read
       );
+
+      if (unreadMessages.length > 0) {
+        const batch = writeBatch(db);
+        unreadMessages.forEach((msg) => {
+          batch.update(doc(db, 'messages', msg.id), { read: true });
+        });
+        await batch.commit();
+      }
+
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [conversationId]);
+  }, [conversationId, user?.uid]);
 
   const sendMessage = async (content: string, mediaUrl?: string) => {
     if (!user || !content.trim()) return;
