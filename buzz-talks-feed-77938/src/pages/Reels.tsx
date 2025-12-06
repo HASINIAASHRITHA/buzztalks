@@ -85,7 +85,14 @@ const Reels = () => {
       if (video) {
         if (index === currentIndex) {
           video.muted = muted;
-          video.play().catch(console.error);
+          video.volume = 1;
+          const playPromise = video.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              // Auto-play was prevented, user interaction required
+              console.log('Auto-play prevented');
+            });
+          }
         } else {
           video.pause();
         }
@@ -99,7 +106,11 @@ const Reels = () => {
     const video = videoRefs.current[currentIndex];
     if (video) {
       video.muted = false;
-      video.play().catch(console.error);
+      video.volume = 1;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => console.log('Play failed'));
+      }
     }
   };
 
@@ -108,6 +119,10 @@ const Reels = () => {
       handleUnmute();
     } else {
       setMuted(!muted);
+      const video = videoRefs.current[currentIndex];
+      if (video) {
+        video.muted = !muted;
+      }
     }
   };
 
@@ -209,7 +224,8 @@ const Reels = () => {
                     src={reel.mediaUrl}
                     loop
                     playsInline
-                    muted={muted}
+                    autoPlay={false}
+                    controls={false}
                     className="h-full w-full object-contain sm:object-contain max-w-full"
                     onClick={() => {
                       const video = videoRefs.current[index];
