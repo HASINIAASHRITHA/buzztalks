@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Trash2, Flame, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { doc, updateDoc, arrayUnion, arrayRemove, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -38,6 +38,8 @@ export function FeedCard({ postId, user, image, caption, likes: initialLikes, co
   const [isDeleting, setIsDeleting] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [commentCount, setCommentCount] = useState(initialComments);
+  const [showLikeAnimation, setShowLikeAnimation] = useState(false);
+  const [isTrending, setIsTrending] = useState(initialLikes.length > 50);
 
   // Real-time listener for post updates (likes and comments)
   useEffect(() => {
@@ -50,6 +52,8 @@ export function FeedCard({ postId, user, image, caption, likes: initialLikes, co
         setLikeCount(newLikes.length);
         setLiked(newLikes.includes(currentUser?.uid || ''));
         setCommentCount(data.commentsCount || 0);
+        // Update trending status in real-time
+        setIsTrending(newLikes.length > 50);
       }
     });
 
@@ -58,6 +62,10 @@ export function FeedCard({ postId, user, image, caption, likes: initialLikes, co
 
   const handleLike = async () => {
     if (!currentUser) return;
+
+    // Show animation immediately for instant feedback
+    setShowLikeAnimation(true);
+    setTimeout(() => setShowLikeAnimation(false), 600);
 
     try {
       const postRef = doc(db, 'posts', postId);
@@ -180,14 +188,32 @@ export function FeedCard({ postId, user, image, caption, likes: initialLikes, co
         </div>
 
         {/* Image - responsive aspect ratio */}
-        <div className="relative aspect-square sm:aspect-[4/5] md:aspect-square bg-muted">
+        <div className="relative aspect-square sm:aspect-[4/5] md:aspect-square bg-muted overflow-hidden group cursor-pointer">
           <img
             src={image}
             alt="Post"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             onDoubleClick={handleLike}
+            onClick={handleLike}
             loading="lazy"
           />
+
+          {/* Trending Badge */}
+          {isTrending && (
+            <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded-full flex items-center gap-1 text-xs font-semibold">
+              <Flame className="w-3 h-3" />
+              Trending
+            </div>
+          )}
+
+          {/* Like Animation */}
+          {showLikeAnimation && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="animate-ping">
+                <Heart className="w-16 h-16 sm:w-20 sm:h-20 fill-pink-500 text-pink-500 opacity-75" />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Actions */}
@@ -196,14 +222,21 @@ export function FeedCard({ postId, user, image, caption, likes: initialLikes, co
             <div className="flex items-center gap-3 sm:gap-4">
               <button
                 onClick={handleLike}
-                className="hover-scale"
+                className={`hover-scale transition-transform duration-200 ${liked ? 'scale-110' : ''}`}
               >
-                <Heart
-                  className={`w-5 h-5 sm:w-6 sm:h-6 ${liked ? 'fill-destructive text-destructive' : ''}`}
-                />
+                <div className="relative">
+                  <Heart
+                    className={`w-5 h-5 sm:w-6 sm:h-6 ${liked ? 'fill-destructive text-destructive' : ''}`}
+                  />
+                </div>
               </button>
-              <button className="hover-scale" onClick={() => setCommentsOpen(true)}>
+              <button className="hover-scale relative" onClick={() => setCommentsOpen(true)}>
                 <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
+                {commentCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {commentCount > 9 ? '9+' : commentCount}
+                  </span>
+                )}
               </button>
               <button className="hover-scale">
                 <Send className="w-5 h-5 sm:w-6 sm:h-6" />

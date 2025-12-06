@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { collection, query, where, orderBy, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Sidebar } from '@/components/Sidebar';
 import { HeaderBar } from '@/components/HeaderBar';
 import { CreatePostModal } from '@/components/CreatePostModal';
 import { SearchModal } from '@/components/SearchModal';
-import { Compass, Search, Loader2, Hash } from 'lucide-react';
+import { Compass, Search, Loader2, Hash, Zap } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 
@@ -16,27 +16,28 @@ export default function Explore() {
   const [searchParams] = useSearchParams();
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [hasNewPosts, setHasNewPosts] = useState(false);
 
   const hashtag = searchParams.get('hashtag');
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      setLoading(true);
-      try {
-        let q;
-        if (hashtag) {
-          // Filter by hashtag
-          q = query(
-            collection(db, 'posts'),
-            where('hashtags', 'array-contains', hashtag),
-            orderBy('createdAt', 'desc')
-          );
-        } else {
-          // Get all posts sorted by likes count (popular)
-          q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
-        }
+    setLoading(true);
+    try {
+      let q;
+      if (hashtag) {
+        // Filter by hashtag with real-time updates
+        q = query(
+          collection(db, 'posts'),
+          where('hashtags', 'array-contains', hashtag),
+          orderBy('createdAt', 'desc')
+        );
+      } else {
+        // Get all posts with real-time updates
+        q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+      }
 
-        const snapshot = await getDocs(q);
+      // Use onSnapshot for real-time updates instead of getDocs
+      const unsubscribe = onSnapshot(q, (snapshot) => {
         const postsData = snapshot.docs.map((docSnapshot) => ({
           id: docSnapshot.id,
           ...(docSnapshot.data() as Record<string, any>),
@@ -48,14 +49,15 @@ export default function Explore() {
         }
 
         setPosts(postsData);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
         setLoading(false);
-      }
-    };
+        setHasNewPosts(false);
+      });
 
-    fetchPosts();
+      return () => unsubscribe();
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setLoading(false);
+    }
   }, [hashtag]);
 
   return (
@@ -69,17 +71,30 @@ export default function Explore() {
         <div className="max-w-6xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 md:py-6">
           {/* Header with Search */}
           <div className="mb-4 sm:mb-6 md:mb-8">
-            <h1 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 flex items-center gap-2">
-              <Compass className="w-5 h-5 sm:w-6 sm:h-6" />
-              {hashtag ? (
-                <>
-                  <Hash className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="truncate">{hashtag}</span>
-                </>
-              ) : (
-                'Explore'
+            <div className="flex items-center justify-between gap-3 mb-3 sm:mb-4">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold flex items-center gap-2">
+                <Compass className="w-5 h-5 sm:w-6 sm:h-6" />
+                {hashtag ? (
+                  <>
+                    <Hash className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="truncate">{hashtag}</span>
+                  </>
+                ) : (
+                  'Explore'
+                )}
+              </h1>
+              {hasNewPosts && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  className="flex items-center gap-2 text-xs sm:text-sm"
+                >
+                  <Zap className="w-3 h-3" />
+                  New Posts
+                </Button>
               )}
-            </h1>
+            </div>
             <button
               onClick={() => setSearchModalOpen(true)}
               className="relative w-full max-w-xl"
